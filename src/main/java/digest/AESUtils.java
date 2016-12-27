@@ -3,7 +3,7 @@ package digest;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
-public class AESCrypt {
+public class AESUtils {
     private static final String HEX = "0123456789abcdef";
 
     public static byte[] encrypt(byte[] src, byte[] key) throws DigestException {

@@ -10,6 +10,11 @@ import java.security.Signature;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
+/**
+ * RSAUtils is a uitl for rsa signature and encrypt.
+ * It depends on commons-codec library for base64 decode and encode.
+ * When use RSAUtils, you should make sure of removing begin and end of pem file.
+ */
 public class RSAUtils {
     public static final String SIGN_ALGORITHMS = "SHA1WithRSA";
 
