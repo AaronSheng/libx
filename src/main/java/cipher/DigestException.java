@@ -1,4 +1,4 @@
-package digest;
+package cipher;
 
 public class DigestException extends Exception {
     public DigestException() {
