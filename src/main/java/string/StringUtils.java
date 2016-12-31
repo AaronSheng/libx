@@ -19,6 +19,12 @@ public class StringUtils {
         return matcher.matches();
     }
 
+    public static boolean isAlphabet(String s) {
+        Pattern pattern = Pattern.compile("^([a-zA-Z0-9]+)?$");
+        Matcher matcher = pattern.matcher(s);
+        return matcher.matches();
+    }
+
     public static String randomAlphabet(int length) {
         Random random = new Random(System.nanoTime());
         StringBuffer sb = new StringBuffer(length);
