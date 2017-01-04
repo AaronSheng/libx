@@ -17,7 +17,7 @@ public class Alipay {
     private static final String PUBLIC_KEY = "your public key";
     private static final String PRIVATE_KEY = "your private key";
 
-    public static String placeOrder(String outTradeNo, Float fee, String subject, String body) {
+    public static String placeOrder(String outTradeNo, Long fee, String subject, String body) {
         try {
             String method = "alipay.trade.app.pay";
             String charset = "utf-8";
@@ -25,7 +25,7 @@ public class Alipay {
             String timeExpress = "5m";
             String signType = "RSA";
             String timestamp = new TimeX().format("yyyy-MM-dd HH:mm:ss");
-            String totalAmount = String.valueOf(fee);
+            String totalAmount = String.valueOf(fee/100f);
 
             JSONObject bizContent = new JSONObject();
             bizContent.put("out_trade_no", outTradeNo);
@@ -50,11 +50,11 @@ public class Alipay {
             String orderInfo = concatParameterStr + "&sign=" + sign;
             return orderInfo;
         } catch (Exception e) {
-            throw new AlipayExeception(e);
+            throw new PayException(e);
         }
     }
 
-    public static AlipayOrder queryOrder(String outTradeNo) {
+    public static PayOrder queryOrder(String outTradeNo) {
         try {
             String method = "alipay.trade.query";
             String charset = "utf-8";
@@ -83,35 +83,22 @@ public class Alipay {
             JSONObject queryResponse = reponseJson.getJSONObject("alipay_trade_query_response");
             String code = queryResponse.getString("code");
             if (!code.equals("10000")) {
-                return new AlipayOrder(false, 0f);
+                return new PayOrder(false, 0L);
             }
 
             String tradeStatus = queryResponse.getString("trade_status");
             if (!(tradeStatus.equals("TRADE_SUCCESS") || tradeStatus.equals("TRADE_FINISHED"))) {
-                return new AlipayOrder(false, 0f);
+                return new PayOrder(false, 0L);
             }
 
-            Float totalAmount = Float.valueOf(queryResponse.getString("total_amount"));
-            return new AlipayOrder(true, totalAmount);
+            Long totalAmount = Float.valueOf(Float.valueOf(queryResponse.getString("total_amount"))*100f).longValue();
+            return new PayOrder(true, totalAmount);
         } catch (Exception e) {
-            throw new AlipayExeception(e);
+            throw new PayException(e);
         }
     }
 
     private static String rsaSign(String preStr) throws DigestException {
         return RSAUtils.sign(preStr, PRIVATE_KEY);
-    }
-
-    public static class AlipayOrder {
-        public Boolean existed;
-        public Float totalFee;
-
-        public AlipayOrder() {
-        }
-
-        public AlipayOrder(Boolean existed, Float totalFee) {
-            this.existed = existed;
-            this.totalFee = totalFee;
-        }
     }
 }

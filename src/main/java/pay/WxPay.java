@@ -8,9 +8,7 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-import org.dom4j.io.SAXReader;
 
-import java.io.InputStream;
 import java.util.Iterator;
 import java.util.List;
 
@@ -22,10 +20,9 @@ public class WxPay {
     private static String NOTIFY_URL = "your notify url";
     private static String KEY = "your key";
 
-    public static WxUnifiedOrder placeOrder(String outTradeNo, Float fee, String body, String ip) throws WxPayException {
+    public static WxUnifiedOrder placeOrder(String outTradeNo, Long fee, String body, String ip) throws PayException {
         try {
-            fee = fee * 100f;
-            String totalFee = String.valueOf(fee.intValue());
+            String totalFee = String.valueOf(fee);
             String nonceStr = StringUtils.randomAlphabet(16);
             String tradeType = "APP";
             String pck = "Sign=WXPay";
@@ -47,16 +44,16 @@ public class WxPay {
             String requestXmlString = getRequestXmlStr(parameters);
             String responseXmlString = HttpUtils.postXml(UNIFIED_ORDER_URL, requestXmlString);
             if (!isSuccessFromUnifiedResponseXmlStr(responseXmlString)) {
-                throw new WxPayException("WxPay unifiedorder fail");
+                throw new PayException("WxPay unifiedorder fail");
             }
             String prepayId = parsePrepayIdFromUnifiedResponseXmlStr(responseXmlString);
             return new WxUnifiedOrder(MCHID, prepayId, nonceStr, pck, sign);
         } catch (Exception e) {
-            throw new WxPayException(e);
+            throw new PayException(e);
         }
     }
 
-    public static WxOrder queryOrder(String outTradeNo) throws WxPayException {
+    public static PayOrder queryOrder(String outTradeNo) throws PayException {
         try {
             String nonceStr = StringUtils.randomAlphabet(16);
             List<Parameter> parameters = ParameterUtils.list(new Parameter("appid", APPID),
@@ -72,17 +69,17 @@ public class WxPay {
             String requestXmlString = getRequestXmlStr(parameters);
             String responseXmlString = HttpUtils.postXml(ORDER_QUERY_URL, requestXmlString);
             if (!isSuccessFromQueryResponseXmlStr(responseXmlString)) {
-                throw new WxPayException("WxPay queryorder fail");
+                throw new PayException("WxPay queryorder fail");
             }
 
             if (isExistedFromQueryResponseXmlStr(responseXmlString)) {
-                Integer fee = parseTotalFeeFromQueryResponseXmlStr(responseXmlString);
-                return new WxOrder(true, fee / 100.0f);
+                Long fee = parseTotalFeeFromQueryResponseXmlStr(responseXmlString);
+                return new PayOrder(true, fee);
             } else {
-                return new WxOrder(false, 0f);
+                return new PayOrder(false, 0L);
             }
         } catch (Exception e) {
-            throw new WxPayException(e);
+            throw new PayException(e);
         }
     }
 
@@ -137,13 +134,13 @@ public class WxPay {
         return resultCodeElement.getText().equals("SUCCESS");
     }
 
-    private static Integer parseTotalFeeFromQueryResponseXmlStr(String responseXmlString) throws DocumentException {
+    private static Long parseTotalFeeFromQueryResponseXmlStr(String responseXmlString) throws DocumentException {
         Document document = DocumentHelper.parseText(responseXmlString);
         Element root = document.getRootElement();
 
         Iterator<?> prepayIdItr = root.elementIterator("total_fee");
         Element prepayIdElement = (Element) prepayIdItr.next();
-        return Integer.valueOf(prepayIdElement.getText());
+        return Long.valueOf(prepayIdElement.getText());
     }
 
     public static class WxUnifiedOrder {
@@ -162,19 +159,6 @@ public class WxPay {
             this.nonceStr = nonceStr;
             this.pck = pck;
             this.sign = sign;
-        }
-    }
-
-    public static class WxOrder {
-        public Boolean existed;
-        public Float totalFee;
-
-        public WxOrder() {
-        }
-
-        public WxOrder(Boolean existed, Float totalFee) {
-            this.existed = existed;
-            this.totalFee = totalFee;
         }
     }
 }
