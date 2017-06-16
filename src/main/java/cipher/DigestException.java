@@ -1,6 +1,6 @@
 package cipher;
 
-public class DigestException extends Exception {
+public class DigestException extends RuntimeException {
     public DigestException() {
         super();
     }
