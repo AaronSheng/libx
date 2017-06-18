@@ -14,7 +14,7 @@ public class TimeX implements Serializable {
     }
 
     public TimeX(String milliString) {
-        SimpleDateFormat sdFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        SimpleDateFormat sdFormatter = new SimpleDateFormat("yyyyMMddHHmmssSSS");
 
         try {
             mDate = sdFormatter.parse(milliString);
@@ -44,7 +44,7 @@ public class TimeX implements Serializable {
     }
 
     public void update(String milliString) {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmssSSS");
 
         try {
             mDate = simpleDateFormat.parse(milliString);
@@ -70,7 +70,7 @@ public class TimeX implements Serializable {
     }
 
     public String format() {
-        SimpleDateFormat sdFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        SimpleDateFormat sdFormatter = new SimpleDateFormat("yyyyMMddHHmmssSSS");
         return sdFormatter.format(mDate);
     }
 
