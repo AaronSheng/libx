@@ -4,6 +4,8 @@ import cipher.DigestException;
 import cipher.RSAUtils;
 import com.alibaba.fastjson.JSONObject;
 import net.HttpUtils;
+import net.Parameter;
+import net.ParameterUtils;
 import time.TimeX;
 
 import java.net.URLEncoder;

@@ -3,6 +3,8 @@ package pay;
 import cipher.DigestException;
 import cipher.Md5Utils;
 import net.HttpUtils;
+import net.Parameter;
+import net.ParameterUtils;
 import string.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;

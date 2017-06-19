@@ -1,4 +1,4 @@
-package pay;
+package net;
 
 public class Parameter implements Comparable {
     private String name;
